@@ -6,7 +6,7 @@
 
 ## Overview
 
-Defensive analysis of an unsolicited, multi-wave email campaign targeting a private individual and their family. The campaign impersonates **Evite** and **Punchbowl** invitation brands using **cloned transactional templates** and delivers one of two payloads:
+Defensive analysis of an unsolicited, multi-wave email campaign. The campaign impersonates **Evite** and **Punchbowl** invitation brands using **cloned transactional templates** and delivers one of two payloads:
 
 1. **Credential phishing (AiTM)** — cloned Evite/Punchbowl emails pointing to attacker domains serving a Cloudflare-backed phish kit (`/akk` path pattern) that harvests email + password + MFA codes via an operator-in-the-loop relay.
 2. **RAT delivery** — cloned Evite/Punchbowl emails whose call-to-action links download a **genuine, digitally signed ConnectWise ScreenConnect client installer** configured for **unattended, persistent, guest (no-authentication) access** to the victim's computer (`?e=Access&y=Guest`).
