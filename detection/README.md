@@ -2,46 +2,108 @@
 
 ## 1. KQL (Microsoft 365 Defender / Sentinel)
 
-### Email — campaign IOCs in inbound mail (Advanced Hunting: EmailEvents)
+### Email — campaign IOCs in inbound mail
+
+The following Advanced Hunting query is directly runnable against `EmailEvents` + `EmailUrlInfo` and correlates URL indicators by `NetworkMessageId`.
+
 ```kusto
-let urls = dynamic(["jeanies-journeys.screenconnect.com","ieee2.screenconnect.com",
-                    "instance-s7gewk-relay.screenconnect.com","instance-ifkw0e-relay.screenconnect.com",
-                    "acodcadohappiness.icu","fbends.icu","nav-adv0cati0n.im",
-                    "pub-58388a1519064228b441a5517c701114.r2.dev"]);
-let subs = dynamic(["PLEASE KINDLY OPEN AND DOWNLOAD YOUR SPECIAL INVITE",
-                    "INVITATION EXTENDED", "A DISTINGUISHED INVITATION",
-                    "SPECIAL INVITATION FROM", "SAVE THE DATE", "JOIN US"]);
+let CampaignHosts = dynamic([
+    "jeanies-journeys.screenconnect.com",
+    "ieee2.screenconnect.com",
+    "instance-s7gewk-relay.screenconnect.com",
+    "instance-ifkw0e-relay.screenconnect.com",
+    "acodcadohappiness.icu",
+    "fbends.icu",
+    "nav-adv0cati0n.im",
+    "pub-58388a1519064228b441a5517c701114.r2.dev"
+]);
+let CampaignSubjects = dynamic([
+    "PLEASE KINDLY OPEN AND DOWNLOAD YOUR SPECIAL INVITE",
+    "INVITATION EXTENDED",
+    "A DISTINGUISHED INVITATION",
+    "SPECIAL INVITATION FROM",
+    "SAVE THE DATE",
+    "JOIN US"
+]);
+let CampaignSenders = dynamic([
+    "sender-a@example.invalid",
+    "sender-b@example.invalid",
+    "sender-c@example.invalid",
+    "forwarder-a@example.invalid",
+    "forwarder-b@example.invalid"
+]);
+let UrlHits =
+    EmailUrlInfo
+    | where Timestamp > ago(14d)
+    | where Url has_any (CampaignHosts)
+    | summarize CampaignUrls = make_set(Url, 20) by NetworkMessageId;
 EmailEvents
 | where Timestamp > ago(14d)
-| where SenderFromAddress in ("sender-a@example.invalid","sender-b@example.invalid","sender-c@example.invalid","forwarder-a@example.invalid","forwarder-b@example.invalid")
-   or Subject has_any (subs)
-   or UrlMatchesAny(EmailUrlInfo, urls) // see EmailUrlInfo join below
+| join kind=leftouter UrlHits on NetworkMessageId
+| where SenderFromAddress in (CampaignSenders)
+    or Subject has_any (CampaignSubjects)
+    or array_length(CampaignUrls) > 0
+| project Timestamp, NetworkMessageId, RecipientEmailAddress, SenderFromAddress,
+          SenderDisplayName, Subject, DeliveryAction, DeliveryLocation, CampaignUrls
+| order by Timestamp desc
 ```
-> Note: join `EmailEvents | join EmailUrlInfo on NetworkMessageId` to match URLs, and `EmailAttachmentInfo` for installer filename `ScreenConnect.ClientSetup`.
 
-### Endpoint — ScreenConnect client artifacts (DeviceProcessEvents / DeviceNetworkEvents / DeviceEvents)
+### Email attachment — ScreenConnect installer names
+
 ```kusto
-// Process execution of the installer
+EmailAttachmentInfo
+| where Timestamp > ago(14d)
+| where FileName startswith "ScreenConnect.ClientSetup"
+| project Timestamp, NetworkMessageId, FileName, SHA256, FileSize, ThreatTypes
+| order by Timestamp desc
+```
+
+### Endpoint — ScreenConnect client artifacts
+
+```kusto
+// Process execution of installer/client
 DeviceProcessEvents
 | where Timestamp > ago(14d)
 | where FileName startswith "ScreenConnect.ClientSetup"
+   or FileName startswith "ScreenConnect.ClientService"
    or ProcessCommandLine contains "ScreenConnect.ClientSetup"
-| project Timestamp, DeviceName, FileName, ProcessCommandLine, InitiatingProcessFileName
+| project Timestamp, DeviceName, AccountName, FileName, SHA256,
+          ProcessCommandLine, FolderPath, InitiatingProcessFileName
+| order by Timestamp desc
+```
 
-// Service creation (persistence)
+```kusto
+// Service-install / persistence artifacts containing ScreenConnect
 DeviceEvents
 | where Timestamp > ago(14d)
-| where ActionType in ("ServiceCreation","ServiceInstalled")
-   or AdditionalFields contains "ScreenConnect"
-| project Timestamp, DeviceName, ActionType, AdditionalFields
+| where AdditionalFields contains "ScreenConnect"
+| project Timestamp, DeviceName, ActionType, AccountName, AdditionalFields
+| order by Timestamp desc
+```
 
-// Network egress to campaign tenants
+```kusto
+// Network egress to campaign-specific ScreenConnect tenants/relays
+let CampaignHosts = dynamic([
+    "jeanies-journeys.screenconnect.com",
+    "ieee2.screenconnect.com",
+    "instance-s7gewk-relay.screenconnect.com",
+    "instance-ifkw0e-relay.screenconnect.com"
+]);
+let CampaignIPs = dynamic([
+    "148.113.219.237",
+    "15.235.110.92",
+    "40.160.1.134",
+    "15.204.129.194"
+]);
 DeviceNetworkEvents
 | where Timestamp > ago(14d)
-| where RemoteUrl endswith ".screenconnect.com"
-    or RemoteIP in ("148.113.219.237","15.235.110.92","40.160.1.134","15.204.129.194")
-| project Timestamp, DeviceName, RemoteUrl, RemoteIP, InitiatingProcessFileName
+| where RemoteUrl has_any (CampaignHosts) or RemoteIP in (CampaignIPs)
+| project Timestamp, DeviceName, AccountName, RemoteUrl, RemoteIP,
+          RemotePort, InitiatingProcessFileName, InitiatingProcessFolderPath
+| order by Timestamp desc
 ```
+
+> **Allowlisting guidance:** do not suppress an event merely because the binary is signed by ConnectWise or runs from a normal ScreenConnect install path. The abuse uses the legitimate client. Suppress only after validating that the **specific tenant/relay** is sanctioned for the environment.
 
 ## 2. Splunk (Endpoint TA / Sysmon)
 
@@ -56,15 +118,17 @@ index=endpoint (Image=*ScreenConnect.ClientSetup.exe OR Image=*ScreenConnect.Cli
 
 ## 3. Sysmon config hint
 
-- Enable EventID 1 (process creation), 3 (network), 6 (driver/image load — 12.8 MB signed EXE loaded from Downloads/Temp), 13 (registry), 11 (file create for `ScreenConnect.ClientSetup*`).
-- Image load logging (EventID 6) catches `ScreenConnect.ClientService.exe` from `%ProgramFiles(x86)%\ScreenConnect Client*`.
+- Enable EventID 1 (process creation), 3 (network), 11 (file create), 13 (registry), plus Windows service-install logging (7045/4697).
+- Hunt for `ScreenConnect.ClientSetup*` in Downloads/Temp and `ScreenConnect.ClientService.exe` beneath ScreenConnect client installation directories.
+- Treat signer/path legitimacy as context, not exoneration.
 
 ## 4. Mail-flow / gateway rules
 
-- Rewrite or sandbox ALL links pointing at `*.screenconnect.com/Bin/ScreenConnect.ClientSetup.*?e=Access&y=Guest` unless the org can prove a sanctioned MSP relationship.
-- Quarantine mail matching the sender + subject IOC table.
-- Treat SPF/DKIM/DMARC pass as **not** exonerating for this campaign (compromised legitimate senders).
+- Rewrite, sandbox, or quarantine inbound links matching `*.screenconnect.com/Bin/ScreenConnect.ClientSetup.*?e=Access&y=Guest` unless the specific tenant is sanctioned.
+- Quarantine mail matching campaign sender/subject/URL combinations.
+- Treat SPF/DKIM/DMARC pass as **not** exonerating for this campaign because legitimate accounts were abused.
+- Higher-confidence behavioral condition: Evite/Punchbowl-branded mail whose normal brand assets/tool links remain genuine but whose primary CTA points to a third-party credential page or ScreenConnect installer.
 
 ## 5. YARA / Sigma
 
-See `../indicators/yara/` and `../indicators/sigma/`. YARA requires PE files (installer). Sigma covers process creation, service install, and network egress. **Allowlist sanctioned tenants** to avoid false positives on legitimate ConnectWise Control usage.
+See `../indicators/yara/` and `../indicators/sigma/`. YARA requires PE files. Sigma covers process creation, service install, and network egress. **Allowlist sanctioned tenants, not merely sanctioned binaries or install paths.**
