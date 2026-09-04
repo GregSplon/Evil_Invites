@@ -16,17 +16,17 @@ Per-sample breakdowns. Recipient addresses and any content identifying affected 
 ## Structural observations
 
 ### Email-level fingerprints
-- All Gmail senders: `Message-ID: <…@mail.gmail.com>`, DKIM `d=gmail.com s=20251104`, SPF/DKIM/DMARC/ARC **all pass**; from a **compromised** account, not an attacker SMTP.
-- Yahoo forward (#5): `X-Mailer: WebService/1.1.26380 YahooMailIosMobile`, DMARC `p=REJECT` on yahoo.com still passes (real account).
+- All Gmail senders: `Message-ID: <…@mail.gmail.com>`, DKIM `d=gmail.com s=20251104`, SPF/DKIM/DMARC/ARC **all pass**; this is consistent with delivery through legitimate accounts rather than attacker-operated SMTP.
+- Yahoo forward (#5): `X-Mailer: WebService/1.1.26380 YahooMailIosMobile`, DMARC `p=REJECT` on yahoo.com still passes (real account path).
 - `To: undisclosed-recipients:;` for broadcast waves (#2, #6–#8); direct `To:` for the family re-sends (#4, #5).
-- Plain-text part present in every sample (HTML + text multipart/alternative) — kit-generated.
+- Plain-text part present in every sample (HTML + text multipart/alternative) — consistent kit-generated structure.
 
 ### Clone-template fingerprints
 - **Punchbowl clones** (#3–#6, #8): identical hotlinks to `static.punchbowl.com` assets incl. invitation `…/1794f7f27962a5c27f8f/envelope/6a295f6c…jpg` and **live tracking pixel** `www.punchbowl.com/invitation/4cbe4dcc60c6751f/t.gif` — same invitation reused across personas/dates.
-- **Evite clones** (#2, #7): hotlink `g0.evitecdn.com` icon sets; **#7 preserves genuine `evite.com/_ct/2219ac970807acf42695103f304ff42729ac67fe/…` transactional tool links** (change RSVP / review details / send message / notification settings) while all CTAs are rewritten → template cloned from a real Evite notification.
+- **Evite clones** (#2, #7): hotlink `g0.evitecdn.com` icon sets; **#7 preserves genuine `evite.com/_ct/2219ac970807acf42695103f304ff42729ac67fe/…` transactional tool links** (change RSVP / review details / send message / notification settings) while all CTAs are rewritten → template cloned from a genuine Evite notification or equivalent source.
 - All CTAs + many footer links point to the single payload destination (all-anchor rewriting).
 - **RAT variant social engineering:** "ACCESS THE FULL INVITATION ON YOUR PC — click 'Open Invitation' to download the file → open the downloaded invitation Card → when prompted select 'Yes'" (UAC click-through).
-- **Persona detail (#6, #8):** fabricated faith-community signature — plausibly targeting a local community.
+- **Persona detail (#6, #8):** community/faith-themed signature content was observed. The available evidence does **not** establish that a local faith community was specifically targeted.
 
 ### Header auth caveat
-Passing SPF/DKIM/DMARC/ARC here is **not** a trust signal — it reflects account compromise of real webmail users, not sender legitimacy.
+Passing SPF/DKIM/DMARC/ARC here is **not** a trust signal — it reflects delivery through legitimate webmail accounts that were compromised or otherwise abused.
