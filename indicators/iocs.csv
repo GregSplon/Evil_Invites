@@ -1,27 +1,27 @@
-type,value,context,first_seen,last_seen,tlp
-url,https://jeanies-journeys.screenconnect.com/Bin/ScreenConnect.ClientSetup.exe?e=Access&y=Guest,ScreenConnect RAT installer (tenant A),2026-08-24,2026-09-04,white
-url,https://ieee2.screenconnect.com/Bin/ScreenConnect.ClientSetup.exe?e=Access&y=Guest,ScreenConnect RAT installer (tenant B),2026-09-04,2026-09-04,white
-url,https://acodcadohappiness.icu/akk/,Credential phish kit,2026-08-21,2026-09-04,white
-url,http://fbends.icu/akk,Credential phish kit,2026-08-27,2026-09-04,white
-domain,jeanies-journeys.screenconnect.com,ScreenConnect web/installer tenant A -> 148.113.219.237,2026-08-24,2026-09-04,white
-domain,instance-s7gewk-relay.screenconnect.com,Embedded relay tenant A -> 15.235.110.92,2026-08-24,2026-09-04,white
-domain,ieee2.screenconnect.com,ScreenConnect web/installer tenant B -> 40.160.1.134,2026-09-04,2026-09-04,white
-domain,instance-ifkw0e-relay.screenconnect.com,Embedded relay tenant B -> 15.204.129.194,2026-09-04,2026-09-04,white
-domain,acodcadohappiness.icu,Cred phish domain (PDR Ltd, CF proxied),2026-08-21,2026-09-04,white
-domain,fbends.icu,Cred phish domain (PDR Ltd, CF proxied),2026-08-27,2026-09-04,white
-domain,nav-adv0cati0n.im,Tracking pixel host (.im, registered, no NS at check),2026-08-21,2026-08-24,white
-domain,pub-58388a1519064228b441a5517c701114.r2.dev,Cloudflare R2 lure-art bucket,2026-08-27,2026-08-27,white
-domain,burt-drop.mom,Overlord 2.5.9 C2 panel (prior campaign infra),2026-08-12,2026-08-13,white
-ip,148.113.219.237,ScreenConnect tenant A web (OVH CA),2026-08-24,2026-09-04,white
-ip,15.235.110.92,ScreenConnect tenant A relay (OVH CA),2026-08-24,2026-09-04,white
-ip,40.160.1.134,ScreenConnect tenant B web (OVH US),2026-09-04,2026-09-04,white
-ip,15.204.129.194,ScreenConnect tenant B relay (OVH US),2026-09-04,2026-09-04,white
-ip,66.163.122.218,Origin/C2 host (GTHost, Overlord panel) - prior campaign infra,2026-08-12,2026-08-13,white
-file_hash_sha256,c68c432515df92ebe29b9eb3dab6a2d2cf1dea292eae3d5f5e081b05ae86f422,ScreenConnect.ClientSetup.exe 26.5.3.9691 tenant A (12,809,272 B),2026-08-24,2026-09-04,white
-file_hash_sha256,5d7a14e9719d05b1bd20099923b12e80911f03f989fe18199aa983054cc4605e,ScreenConnect.ClientSetup.exe 26.5.3.9691 tenant B (12,809,272 B),2026-09-04,2026-09-04,white
-email_from,sender-a@example.invalid,Compromised account ("Persona A"),2026-08-13,2026-08-24,white
-email_from,sender-b@example.invalid,Compromised account ("Persona B"),2026-08-21,2026-09-04,white
-email_from,sender-c@example.invalid,Compromised account ("Persona C"),2026-08-27,2026-09-04,white
-email_from,forwarder-a@example.invalid,Re-sender of Persona A lure,2026-08-24,2026-08-24,white
-email_from,forwarder-b@example.invalid,Forwarder of Persona A lure,2026-08-24,2026-08-24,white
-subject_regex,(PLEASE KINDLY OPEN AND DOWNLOAD YOUR SPECIAL INVITE|INVITATION EXTENDED (EXCLUSIVELY )?FROM|A DISTINGUISHED INVITATION|SPECIAL INVITATION FROM|SAVE THE DATE|JOIN US),Subject-line pattern,2026-08-13,2026-09-04,white
+type,value,role,context,confidence,source,first_seen,last_seen,status,tlp,shareable
+url,https://jeanies-journeys.screenconnect.com/Bin/ScreenConnect.ClientSetup.exe?e=Access&y=Guest,delivery,"Observed ScreenConnect installer URL for tenant A",high,direct-observation,2026-08-24,2026-09-04,active-at-last-check,CLEAR,yes
+url,https://ieee2.screenconnect.com/Bin/ScreenConnect.ClientSetup.exe?e=Access&y=Guest,delivery,"Observed ScreenConnect installer URL for tenant B",high,direct-observation,2026-09-04,2026-09-04,active-at-last-check,CLEAR,yes
+url,https://acodcadohappiness.icu/akk/,credential-phish,"Observed credential-phish landing path",high,direct-observation,2026-08-21,2026-09-04,active-at-last-check,CLEAR,yes
+url,http://fbends.icu/akk,credential-phish,"Observed credential-phish landing path",high,direct-observation,2026-08-27,2026-09-04,active-at-last-check,CLEAR,yes
+domain,jeanies-journeys.screenconnect.com,delivery-tenant,"Observed ScreenConnect web/installer tenant A; resolved to 148.113.219.237",high,direct-observation,2026-08-24,2026-09-04,active-at-last-check,CLEAR,yes
+domain,instance-s7gewk-relay.screenconnect.com,relay,"Relay hostname embedded in tenant A installer; resolved to 15.235.110.92",high,installer-analysis,2026-08-24,2026-09-04,active-at-last-check,CLEAR,yes
+domain,ieee2.screenconnect.com,delivery-tenant,"Observed ScreenConnect web/installer tenant B; resolved to 40.160.1.134",high,direct-observation,2026-09-04,2026-09-04,active-at-last-check,CLEAR,yes
+domain,instance-ifkw0e-relay.screenconnect.com,relay,"Relay hostname embedded in tenant B installer; resolved to 15.204.129.194",high,installer-analysis,2026-09-04,2026-09-04,active-at-last-check,CLEAR,yes
+domain,acodcadohappiness.icu,credential-phish,"Cloudflare-proxied credential-phish domain",high,direct-observation,2026-08-21,2026-09-04,active-at-last-check,CLEAR,yes
+domain,fbends.icu,credential-phish,"Cloudflare-proxied credential-phish domain",high,direct-observation,2026-08-27,2026-09-04,active-at-last-check,CLEAR,yes
+domain,nav-adv0cati0n.im,tracking,"Tracking-pixel host observed in campaign content; no NS at last check",medium,email-analysis,2026-08-21,2026-08-24,inactive-at-last-check,CLEAR,yes
+domain,pub-58388a1519064228b441a5517c701114.r2.dev,lure-hosting,"Cloudflare R2 bucket serving observed lure artwork",high,email-analysis,2026-08-27,2026-08-27,observed,CLEAR,yes
+domain,burt-drop.mom,prior-linked-infrastructure,"Overlord 2.5.9 panel from prior linked campaign infrastructure; not part of current ScreenConnect delivery",medium,prior-project-analysis,2026-08-12,2026-08-13,historical,CLEAR,yes
+ip,148.113.219.237,delivery-host,"ScreenConnect tenant A web endpoint (OVH CA); shared hosting context possible",high,dns-validation,2026-08-24,2026-09-04,active-at-last-check,CLEAR,yes
+ip,15.235.110.92,relay-host,"ScreenConnect tenant A relay endpoint (OVH CA); shared provider infrastructure context possible",high,dns-validation,2026-08-24,2026-09-04,active-at-last-check,CLEAR,yes
+ip,40.160.1.134,delivery-host,"ScreenConnect tenant B web endpoint (OVH US); shared hosting context possible",high,dns-validation,2026-09-04,2026-09-04,active-at-last-check,CLEAR,yes
+ip,15.204.129.194,relay-host,"ScreenConnect tenant B relay endpoint (OVH US); shared provider infrastructure context possible",high,dns-validation,2026-09-04,2026-09-04,active-at-last-check,CLEAR,yes
+ip,66.163.122.218,prior-linked-infrastructure,"Prior origin/C2 host associated with Overlord panel; not part of current ScreenConnect delivery",medium,prior-project-analysis,2026-08-12,2026-08-13,historical,CLEAR,yes
+file_hash_sha256,c68c432515df92ebe29b9eb3dab6a2d2cf1dea292eae3d5f5e081b05ae86f422,delivery-artifact,"ScreenConnect.ClientSetup.exe 26.5.3.9691 tenant A; 12,809,272 bytes",high,direct-download-and-hash,2026-08-24,2026-09-04,observed,CLEAR,yes
+file_hash_sha256,5d7a14e9719d05b1bd20099923b12e80911f03f989fe18199aa983054cc4605e,delivery-artifact,"ScreenConnect.ClientSetup.exe 26.5.3.9691 tenant B; 12,809,272 bytes",high,direct-download-and-hash,2026-09-04,2026-09-04,observed,CLEAR,yes
+email_from,sender-a@example.invalid,sender-account,"Sanitized placeholder for confirmed compromised account persona A",high,direct-observation,2026-08-13,2026-08-24,sanitized,CLEAR,no
+email_from,sender-b@example.invalid,sender-account,"Sanitized placeholder for observed legitimate account persona B; compromise assessment based on campaign behavior",medium,direct-observation,2026-08-21,2026-09-04,sanitized,CLEAR,no
+email_from,sender-c@example.invalid,sender-account,"Sanitized placeholder for observed legitimate account persona C; compromise assessment based on campaign behavior",medium,direct-observation,2026-08-27,2026-09-04,sanitized,CLEAR,no
+email_from,forwarder-a@example.invalid,forwarder,"Sanitized placeholder for re-sender of observed lure",medium,direct-observation,2026-08-24,2026-08-24,sanitized,CLEAR,no
+email_from,forwarder-b@example.invalid,forwarder,"Sanitized placeholder for forwarder of observed lure",medium,direct-observation,2026-08-24,2026-08-24,sanitized,CLEAR,no
+subject_regex,"(PLEASE KINDLY OPEN AND DOWNLOAD YOUR SPECIAL INVITE|INVITATION EXTENDED (EXCLUSIVELY )?FROM|A DISTINGUISHED INVITATION|SPECIAL INVITATION FROM|SAVE THE DATE|JOIN US)",email-pattern,"Observed campaign subject-line family; use with additional indicators to reduce false positives",medium,email-analysis,2026-08-13,2026-09-04,behavioral,CLEAR,yes
