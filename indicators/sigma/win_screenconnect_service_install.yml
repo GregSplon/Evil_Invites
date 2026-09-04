@@ -1,0 +1,33 @@
+title: ScreenConnect Client Service Installation
+id: sc-campaign-0002
+status: experimental
+description: >
+  Detects creation of the ScreenConnect ("ConnectWise Control") client service,
+  which the campaign installer registers for persistent unattended access.
+  The service name is derived from the install directory GUID, e.g.
+  "ScreenConnect Client (ce3ccbeedc849176)"; match on the ScreenConnect prefix.
+references:
+  - https://jeanies-journeys.screenconnect.com/Bin/ScreenConnect.ClientSetup.exe?e=Access&y=Guest
+author: defensive research
+date: 2026/09/04
+tags:
+  - attack.persistence
+  - attack.privilege_escalation
+  - attack.t1543.003
+logsource:
+  product: windows
+  service: system
+detection:
+  selection_7045:
+    EventID: 7045
+    ServiceName|contains: 'ScreenConnect'
+  selection_4697:
+    EventID: 4697
+    ServiceName|contains: 'ScreenConnect'
+  selection_service_start:
+    EventID: 7040
+    ServiceName|contains: 'ScreenConnect'
+  condition: 1 of selection_*
+falsepositives:
+  - Legitimate MSP deployments of ScreenConnect/ConnectWise Control
+level: high
