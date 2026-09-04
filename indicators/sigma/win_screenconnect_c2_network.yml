@@ -2,9 +2,11 @@ title: Outbound Connection to Observed ScreenConnect RAT Tenant Infrastructure
 id: sc-campaign-0003
 status: experimental
 description: >
-  Detects outbound TLS connections from endpoints to the ScreenConnect web/relay
-  infrastructure observed in this campaign. For endpoints NOT under a sanctioned
-  remote-support program this is a strong RAT-enrollment indicator.
+  Detects outbound TLS connections from endpoints to ScreenConnect web/relay
+  infrastructure observed in this campaign. The observed tenant and relay names
+  are campaign-specific indicators. Do not suppress matches merely because the
+  initiating binary is a legitimate ScreenConnect client; the malicious activity
+  abuses that legitimate client.
 references:
   - https://jeanies-journeys.screenconnect.com/
   - https://ieee2.screenconnect.com/
@@ -23,24 +25,18 @@ detection:
       - 'ieee2.screenconnect.com'
       - 'instance-s7gewk-relay.screenconnect.com'
       - 'instance-ifkw0e-relay.screenconnect.com'
-      - 'server-ovh60020004-web.screenconnect.com'
-      - 'server-ovh30010021-web.screenconnect.com'
   selection_tenant_ips:
     DestinationIp:
       - '148.113.219.237'
       - '15.235.110.92'
       - '40.160.1.134'
       - '15.204.129.194'
-  filter_sanctioned:
-    Image|startswith:
-      - 'C:\Program Files\ScreenConnect Client'  # adjust/expand to sanctioned deployment paths
-  condition: (1 of selection_*) and not filter_sanctioned
+  condition: 1 of selection_*
 fields:
   - Image
   - DestinationIp
   - DestinationHostname
   - User
 falsepositives:
-  - Legitimate MSP remote-support traffic to these SaaS tenants (unlikely; tenant names are attacker-specific)
-  - Generic *.screenconnect.com traffic from sanctioned ConnectWise Control deployments (use filter)
+  - A legitimate organization intentionally using one of these exact observed tenants or relay endpoints. Verify ownership before suppressing.
 level: high
