@@ -4,14 +4,14 @@ Per-sample breakdowns. Recipient addresses and any content identifying affected 
 
 | # | Date (UTC) | Sender account | Persona | Subject | Template | Payload target | Sample SHA-256 |
 |---|---|---|---|---|---|---|---|
-| 1 | 2026-08-13 | search4cm@gmail.com | "Dori Picard" | SAVE THE DATE- INVITATION EXTENDED TO YOU FROM Dori Picard | Evite | credential phish (burned domain) | *(prior sample)* |
-| 2 | 2026-08-21 15:19 | ndbisongirl@gmail.com | "Eva Lahlum" | SAVE THE DATE: INVITATION EXTENDED EXCLUSIVELY FROM Eva Lahlum | Evite | `acodcadohappiness.icu/akk/` | d23e23674999516f34988e8259e3d0dcb2a945b6bcb6e8f942c37d8e9f03eff6 |
-| 3 | 2026-08-24 15:53 | search4cm@gmail.com | "Dori Picard" | PLEASE KINDLY OPEN AND DOWNLOAD YOUR SPECIAL INVITE FROM DORI PICARD | Punchbowl ("Chip Nesser") | SC RAT tenant A | *(embedded in 5/6)* |
-| 4 | 2026-08-24 17:46 | littleann.schweitz06@gmail.com | "Annie Norberg" (Re:) | Re: PLEASE KINDLY OPEN AND DOWNLOAD… | Punchbowl | SC RAT tenant A | 37dc2352103abe32b1ba41061606d3fc5462a9aa89a56af7899a1e9bd8bc2c6e |
-| 5 | 2026-08-24 22:32 | jacinta58103@yahoo.com | "Jacinta Splonskowski" (Fw:) | Fw: PLEASE KINDLY OPEN AND DOWNLOAD… | Punchbowl | SC RAT tenant A | 81c86acaf1c4eca275377a7a29a8d856adf472078a23d9f48971290aa013b46f |
-| 6 | 2026-08-27 13:03 | zavfranck@gmail.com | "Zavior Franck" | Join Us! | Punchbowl-logo | `fbends.icu/akk` | 802759fc0c18dbf9afbba5ded595c0a678e4809272a1b0f736b88e78cc3d8b39 |
-| 7 | 2026-09-04 13:39 | ndbisongirl@gmail.com | "Eva Lahlum" | A Distinguished Invitation From Eva Lahlum | Evite ("Eva's Party For Screen!") | SC RAT tenant B | 174fb27780a8c3989629eb78f309321c6b2b935a51e85980b31777c619c0a48d |
-| 8 | 2026-09-04 15:55 | zavfranck@gmail.com | "Zavior Franck" | SPECIAL INVITATION FROM ZAVIOR FRANCK | Punchbowl ("Chip Nesser") | SC RAT tenant B | f8246227127be5357ea2d113e8f041d0596df18dfb02977adbf9017ec6161b33 |
+| 1 | 2026-08-13 | sender-a@example.invalid | "Persona A" | SAVE THE DATE- INVITATION EXTENDED TO YOU FROM Persona A | Evite | credential phish (burned domain) | *(prior sample)* |
+| 2 | 2026-08-21 15:19 | sender-b@example.invalid | "Persona B" | SAVE THE DATE: INVITATION EXTENDED EXCLUSIVELY FROM Persona B | Evite | `acodcadohappiness.icu/akk/` | d23e23674999516f34988e8259e3d0dcb2a945b6bcb6e8f942c37d8e9f03eff6 |
+| 3 | 2026-08-24 15:53 | sender-a@example.invalid | "Persona A" | PLEASE KINDLY OPEN AND DOWNLOAD YOUR SPECIAL INVITE FROM Persona A | Punchbowl ("Event Host") | SC RAT tenant A | *(embedded in 5/6)* |
+| 4 | 2026-08-24 17:46 | forwarder-a@example.invalid | "Forwarder A" (Re:) | Re: PLEASE KINDLY OPEN AND DOWNLOAD… | Punchbowl | SC RAT tenant A | 37dc2352103abe32b1ba41061606d3fc5462a9aa89a56af7899a1e9bd8bc2c6e |
+| 5 | 2026-08-24 22:32 | forwarder-b@example.invalid | "Forwarder B" (Fw:) | Fw: PLEASE KINDLY OPEN AND DOWNLOAD… | Punchbowl | SC RAT tenant A | 81c86acaf1c4eca275377a7a29a8d856adf472078a23d9f48971290aa013b46f |
+| 6 | 2026-08-27 13:03 | sender-c@example.invalid | "Persona C" | Join Us! | Punchbowl-logo | `fbends.icu/akk` | 802759fc0c18dbf9afbba5ded595c0a678e4809272a1b0f736b88e78cc3d8b39 |
+| 7 | 2026-09-04 13:39 | sender-b@example.invalid | "Persona B" | A Distinguished Invitation From Persona B | Evite ("A Party Invitation") | SC RAT tenant B | 174fb27780a8c3989629eb78f309321c6b2b935a51e85980b31777c619c0a48d |
+| 8 | 2026-09-04 15:55 | sender-c@example.invalid | "Persona C" | SPECIAL INVITATION FROM PERSONA C | Punchbowl ("Event Host") | SC RAT tenant B | f8246227127be5357ea2d113e8f041d0596df18dfb02977adbf9017ec6161b33 |
 
 ## Structural observations
 
@@ -26,7 +26,7 @@ Per-sample breakdowns. Recipient addresses and any content identifying affected 
 - **Evite clones** (#2, #7): hotlink `g0.evitecdn.com` icon sets; **#7 preserves genuine `evite.com/_ct/2219ac970807acf42695103f304ff42729ac67fe/…` transactional tool links** (change RSVP / review details / send message / notification settings) while all CTAs are rewritten → template cloned from a real Evite notification.
 - All CTAs + many footer links point to the single payload destination (all-anchor rewriting).
 - **RAT variant social engineering:** "ACCESS THE FULL INVITATION ON YOUR PC — click 'Open Invitation' to download the file → open the downloaded invitation Card → when prompted select 'Yes'" (UAC click-through).
-- **Persona detail (#6, #8):** fabricated signature "Seminarian, Diocese of Duluth / Pontifical North American College / Pax Christi" — plausibly targeting a Catholic community.
+- **Persona detail (#6, #8):** fabricated faith-community signature — plausibly targeting a local community.
 
 ### Header auth caveat
 Passing SPF/DKIM/DMARC/ARC here is **not** a trust signal — it reflects account compromise of real webmail users, not sender legitimacy.

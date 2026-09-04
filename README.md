@@ -15,11 +15,11 @@ All mail passes SPF/DKIM/DMARC/ARC because it is sent from **compromised legitim
 
 ## Key findings
 
-- **≥3 compromised sender personas**, one confirmed account takeover (`search4cm@gmail.com`), all sending byte-identical clone templates → single coordinated operator.
+- **≥3 compromised sender personas**, one confirmed account takeover (`sender-a@example.invalid`), all sending byte-identical clone templates → single coordinated operator.
 - **2 parallel ScreenConnect SaaS tenants** (ConnectWise-hosted, OVH) serving the same build (26.5.3.9691); embedded relay hosts and RSA tenant keys differ per tenant → tenant-pair fingerprinting works, hash-per-tenant blocking works.
 - **Evite clone preserves genuine `evite.com/_ct/` transactional tool links** while rewriting CTAs → clone sourced from a real Evite notification (victim-received or template compromise).
 - **Punchbowl lure assets are reused verbatim across personas/dates**, including a live tracking pixel → strong campaign pivot/attribution anchor.
-- **Fabricated persona** ("Zavior Franck", Seminarian, Diocese of Duluth) suggests targeted social engineering of a faith community.
+- **Fabricated faith-community persona** suggests targeted social engineering of a local community.
 - Campaign escalation arc: credential phish (08-13) → AiTM (08-21) → RAT delivery (08-24) → more personas + second tenant (09-04).
 
 ## Repository structure

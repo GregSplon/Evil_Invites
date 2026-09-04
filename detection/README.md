@@ -13,7 +13,7 @@ let subs = dynamic(["PLEASE KINDLY OPEN AND DOWNLOAD YOUR SPECIAL INVITE",
                     "SPECIAL INVITATION FROM", "SAVE THE DATE", "JOIN US"]);
 EmailEvents
 | where Timestamp > ago(14d)
-| where SenderFromAddress in ("search4cm@gmail.com","ndbisongirl@gmail.com","zavfranck@gmail.com","littleann.schweitz06@gmail.com","jacinta58103@yahoo.com")
+| where SenderFromAddress in ("sender-a@example.invalid","sender-b@example.invalid","sender-c@example.invalid","forwarder-a@example.invalid","forwarder-b@example.invalid")
    or Subject has_any (subs)
    or UrlMatchesAny(EmailUrlInfo, urls) // see EmailUrlInfo join below
 ```

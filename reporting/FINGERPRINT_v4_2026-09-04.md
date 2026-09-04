@@ -6,7 +6,7 @@
 
 ## 1. What changed since v3
 
-1. **Confirmed single coordinated campaign, multi-persona.** Same payload pattern now flows through ≥3 sender personas using different compromised accounts. New persona: **"Zavior Franck"** `<zavfranck@gmail.com>` with a fabricated seminarian signature ("Seminarian, Diocese of Duluth, Pontifical North American College", "Pax Christi") — targeted social engineering, likely aimed at a Catholic/parish community around the victim family.
+1. **Confirmed single coordinated campaign, multi-persona.** Same payload pattern now flows through ≥3 sender personas using different compromised accounts. New persona: **"Persona C"** `<sender-c@example.invalid>` with a fabricated faith-community signature — targeted social engineering, likely aimed at a local community.
 2. **Second ScreenConnect tenant discovered (parallel, not rotated):** `ieee2.screenconnect.com`. The 08-24 tenant `jeanies-journeys.screenconnect.com` is **still live** — both serve installers concurrently. Two web/relay pairs, same ScreenConnect build (26.5.3.9691), same 12,809,272-byte installer shape.
 3. **Evite-branded templates now ALSO deliver the RAT**, not just credential phish. 09-04 "Eva's Party For Screen!" clone preserves **real** `evite.com/_ct/...` transactional tool links (token `2219ac970807acf42695103f304ff42729ac67fe`) while rewriting every CTA to the ScreenConnect installer — evidence the template was cloned from a genuine Evite reminder email.
 4. **New credential-phish domain:** `fbends.icu/akk` (registered 08-25, the gap day between the 08-24 RAT wave and the 08-27 "Join Us!" wave). Same `.icu` + `/akk` pattern, PDR registrar, new Cloudflare NS pair (`pola/tate`).
@@ -21,10 +21,10 @@
 
 | Persona | Account | Dates observed | Payloads delivered |
 |---|---|---|---|
-| "Dori Picard" | `search4cm@gmail.com` (confirmed ATO) | 08-13 → 08-24 | Evite cred-phish → Punchbowl+ScreenConnect RAT |
-| "Eva Lahlum" | `ndbisongirl@gmail.com` | 08-21 → 09-04 | Evite cred-phish → Evite+ScreenConnect RAT |
-| "Zavior Franck" | `zavfranck@gmail.com` | 08-27 → 09-04 | Punchbowl cred-phish (`fbends.icu/akk`) → Punchbowl+ScreenConnect RAT |
-| Forwarders/re-senders | `littleann.schweitz06@gmail.com`, `jacinta58103@yahoo.com` (Yahoo iOS) | 08-24 | Re:/Fw: of Dori RAT lure (social spread) |
+| "Persona A" | `sender-a@example.invalid` (confirmed ATO) | 08-13 → 08-24 | Evite cred-phish → Punchbowl+ScreenConnect RAT |
+| "Persona B" | `sender-b@example.invalid` | 08-21 → 09-04 | Evite cred-phish → Evite+ScreenConnect RAT |
+| "Persona C" | `sender-c@example.invalid` | 08-27 → 09-04 | Punchbowl cred-phish (`fbends.icu/akk`) → Punchbowl+ScreenConnect RAT |
+| Forwarders/re-senders | `forwarder-a@example.invalid`, `forwarder-b@example.invalid` (webmail clients) | 08-24 | Re:/Fw: of Persona A RAT lure (social spread) |
 
 ### 2.2 Payload families
 
@@ -32,7 +32,7 @@
 |---|---|---|
 | **Landing / link** | `https://acodcadohappiness.icu/akk/`, `http://fbends.icu/akk` (all CTAs rewritten) | `*.screenconnect.com/Bin/ScreenConnect.ClientSetup.exe?e=Access&y=Guest` |
 | **Brand template** | Evite (08-13/08-21), Punchbowl-logo (08-27) | Punchbowl (08-24, 09-04), Evite (09-04) |
-| **Event hooks** | "Save the Date", "You're invited", "Come celebrate… Chip Nesser" | "ACCESS THE FULL INVITATION ON YOUR PC", "Eva's Party For Screen!", 3-step open-install-Yes |
+| **Event hooks** | "Save the Date", "You're invited", "Come celebrate… Event Host" | "ACCESS THE FULL INVITATION ON YOUR PC", "A Party Invitation", 3-step open-install-Yes |
 | **State** | Live behind Cloudflare managed challenge (403 to bots) on both domains as of 09-04 | Both SC tenants live as of 09-04 |
 
 ### 2.3 ScreenConnect RAT infrastructure (ConnectWise SaaS on OVH)
@@ -60,13 +60,13 @@
 
 | Date | Sender | Template | Payload target |
 |---|---|---|---|
-| 08-13 | Dori Picard | Evite "Save the Date" | cred-phish domain (burned) |
-| 08-21 | Eva Lahlum | Evite "Save the Date" | `acodcadohappiness.icu/akk` |
-| 08-24 (08:52→22:32) | Dori Picard (+Re:/Fw:) | Punchbowl "Chip Nesser" | SC RAT `jeanies-journeys` |
+| 08-13 | Persona A | Evite "Save the Date" | cred-phish domain (burned) |
+| 08-21 | Persona B | Evite "Save the Date" | `acodcadohappiness.icu/akk` |
+| 08-24 (08:52→22:32) | Persona A (+Re:/Fw:) | Punchbowl "Event Host" | SC RAT `jeanies-journeys` |
 | 08-25 | — | — | `fbends.icu` registered |
-| 08-27 | Zavior Franck | Punchbowl-logo "Join Us!" | `fbends.icu/akk` |
-| 09-04 | Eva Lahlum | Evite "Eva's Party For Screen!" | SC RAT `ieee2` |
-| 09-04 | Zavior Franck | Punchbowl "Chip Nesser" | SC RAT `ieee2` |
+| 08-27 | Persona C | Punchbowl-logo "Join Us!" | `fbends.icu/akk` |
+| 09-04 | Persona B | Evite "A Party Invitation" | SC RAT `ieee2` |
+| 09-04 | Persona C | Punchbowl "Event Host" | SC RAT `ieee2` |
 
 ---
 
@@ -82,10 +82,10 @@
 ## 4. Next steps (unchanged from v3, plus)
 
 - **ConnectWise abuse reporting for BOTH tenants** (`jeanies-journeys`, `ieee2` + relays `instance-s7gewk`, `instance-ifkw0e`) — ToS suspension removes the RAT delivery channel.
-- **Google:** report `zavfranck@gmail.com` as a compromised account used for phishing; continue recovery for `search4cm@gmail.com`, `ndbisongirl@gmail.com`.
+- **Provider:** report the three sender accounts as compromised and used for phishing; continue recovery for all affected accounts.
 - **PDR Ltd abuse** for `fbends.icu` (and `acodcadohappiness.icu`); monitor new PDR + any-Cloudflare-NS + `.icu/.cfd/.lat/.mom/.sbs/.top/.im` registrations weekly.
 - **Community intel:** submit new installer hash + both SC tenant URLs + `fbends.icu` to URLhaus/VT/PhishTank; share the R2 bucket path as an abuse contact for Cloudflare.
-- **Victim-community warning:** given the fabricated seminarian persona tied to a specific diocese, warn the affected parish/community that "invitation" emails mentioning parish figures are forged; verify by phone.
+- **Community warning:** given the fabricated faith-community persona, warn the affected community that "invitation" emails mentioning local figures are forged; verify by phone.
 
 ---
 
@@ -99,7 +99,7 @@
 
 **Files (SHA-256):** `c68c432515df92ebe29b9eb3dab6a2d2cf1dea292eae3d5f5e081b05ae86f422`, `5d7a14e9719d05b1bd20099923b12e80911f03f989fe18199aa983054cc4605e` (ScreenConnect.ClientSetup.exe, 26.5.3.9691, 12,809,272 B)
 
-**Senders:** `search4cm@gmail.com`, `ndbisongirl@gmail.com`, `zavfranck@gmail.com`, `littleann.schweitz06@gmail.com`, `jacinta58103@yahoo.com`
+**Senders:** `sender-a@example.invalid`, `sender-b@example.invalid`, `sender-c@example.invalid`, `forwarder-a@example.invalid`, `forwarder-b@example.invalid`
 
 **Subject regex:** `(PLEASE KINDLY OPEN AND DOWNLOAD YOUR SPECIAL INVITE|INVITATION EXTENDED (EXCLUSIVELY )?FROM|A DISTINGUISHED INVITATION|SPECIAL INVITATION FROM|SAVE THE DATE|JOIN US)`
 
